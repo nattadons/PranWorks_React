@@ -75,6 +75,18 @@ function TaskDetail() {
         }
     };
 
+    const getCategoryColor = (category) => {
+        switch (category) {
+            case 'Work': return 'bg-blue-100 text-blue-800';
+            case 'Personal': return 'bg-pink-100 text-pink-800';
+            case 'Study': return 'bg-purple-100 text-purple-800';
+            case 'Health': return 'bg-green-100 text-green-800';
+            case 'Shopping': return 'bg-yellow-100 text-yellow-800';
+            default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+
     const getStatusColor = (status) => {
         switch (status) {
             case 'Complete': return 'bg-green-100 text-green-800';
@@ -205,6 +217,24 @@ function TaskDetail() {
                                 {task.description || 'No description available'}
                             </p>
                         </div>
+                        {task.categories && task.categories.length > 0 && (
+                            <div className="mt-6">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Categories
+                                </label>
+                                <div className="flex flex-wrap gap-2">
+                                    {task.categories.map((category, index) => (
+                                        <span
+                                            key={index}
+                                            className={`inline-block text-xs px-2 py-1 rounded-full ${getCategoryColor(category)}`}
+                                        >
+                                            {category}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                     </div>
                 </div>
             </div>

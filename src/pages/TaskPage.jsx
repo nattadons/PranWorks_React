@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Calendar } from 'lucide-react';
-import TaskForm from '../components/TaskForm'; 
+import TaskForm from '../components/TaskForm';
 import { useEffect } from 'react';
 
 
+const getCategoryColor = (category) => {
+  switch (category) {
+    case 'Work': return 'bg-blue-100 text-blue-800';
+    case 'Personal': return 'bg-pink-100 text-pink-800';
+    case 'Study': return 'bg-purple-100 text-purple-800';
+    case 'Health': return 'bg-green-100 text-green-800';
+    case 'Shopping': return 'bg-yellow-100 text-yellow-800';
+    default: return 'bg-gray-100 text-gray-800';
+  }
+};
 
 
 
@@ -137,6 +147,19 @@ function TaskPage() {
                       <div className="flex items-center">
                         <Calendar className="h-4 w-4 mr-2" />
                         {new Date(task.deadline).toLocaleDateString()}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex flex-wrap gap-1">
+                        {task.categories && task.categories.map((cat, index) => (
+                          <span
+                            key={index}
+                            className={`inline-block text-xs px-2 py-1 rounded-full ${getCategoryColor(cat)}`}
+                          >
+                            {cat}
+                          </span>
+
+                        ))}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

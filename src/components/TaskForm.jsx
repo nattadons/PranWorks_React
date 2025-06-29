@@ -1,12 +1,30 @@
 import React, { useState } from 'react';
 
 function TaskForm({ task = {}, onSave, onCancel }) {
+
+
     const [formData, setFormData] = useState({
         name: task.name || '',
         description: task.description || '',
         status: task.status || 'Todo',
         deadline: task.deadline ? task.deadline.slice(0, 10) : '',
+        categories: task.categories || [],
+
     });
+
+    const categoryOptions = ['Work', 'Personal', 'Shopping', 'Health', 'Study'];
+    const toggleCategory = (cat) => {
+        setFormData((prev) => {
+            const alreadySelected = prev.categories.includes(cat);
+            return {
+                ...prev,
+                categories: alreadySelected
+                    ? prev.categories.filter((c) => c !== cat)
+                    : [...prev.categories, cat],
+            };
+        });
+    };
+
 
     const getStatusColor = (status) => {
         switch (status) {
@@ -21,7 +39,12 @@ function TaskForm({ task = {}, onSave, onCancel }) {
         }
     };
 
+    const [errors, setErrors] = useState({});
+
+
     const handleSubmit = async () => {
+        if (!validateForm()) return;
+
         try {
             let res;
             if (task.id) {
@@ -55,6 +78,23 @@ function TaskForm({ task = {}, onSave, onCancel }) {
             alert('Failed to save task. Please try again.');
         }
     };
+
+
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!formData.name.trim()) newErrors.name = 'Task name is required.';
+        if (!formData.deadline) newErrors.deadline = 'Deadline is required.';
+        if (formData.categories.length === 0) newErrors.categories = 'Please select at least one category.';
+
+        const validStatuses = ['Todo', 'In Progress', 'Complete'];
+        if (!validStatuses.includes(formData.status)) newErrors.status = 'Please select a valid status.';
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -100,6 +140,8 @@ function TaskForm({ task = {}, onSave, onCancel }) {
                             className="w-full text-3xl font-bold border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                         />
                     </h1>
+                    {errors.name && <p className="text-red-600 text-sm mt-1 mb-2">{errors.name}</p>}
+
                     <div className="flex items-center space-x-4">
                         <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(formData.status)}`}>
                             {formData.status}
@@ -125,6 +167,8 @@ function TaskForm({ task = {}, onSave, onCancel }) {
                                     onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
                                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 />
+                                {errors.deadline && <p className="text-red-600 text-sm mt-1">{errors.deadline}</p>}
+
                             </div>
 
                             <div>
@@ -140,6 +184,8 @@ function TaskForm({ task = {}, onSave, onCancel }) {
                                     <option value="In Progress">In Progress</option>
                                     <option value="Complete">Complete</option>
                                 </select>
+                                {errors.status && <p className="text-red-600 text-sm mt-1">{errors.status}</p>}
+
                             </div>
                         </div>
 
@@ -155,6 +201,29 @@ function TaskForm({ task = {}, onSave, onCancel }) {
                                 placeholder="Enter task description..."
                             />
                         </div>
+                        <div className="mt-6">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Categories
+                            </label>
+                            <div className="flex flex-wrap gap-2">
+                                {categoryOptions.map((cat) => (
+                                    <label key={cat} className="flex items-center space-x-2 text-sm text-gray-700">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.categories.includes(cat)}
+                                            onChange={() => toggleCategory(cat)}
+                                            className="form-checkbox h-4 w-4 text-indigo-600 border-gray-300"
+                                        />
+
+                                        <span>{cat}</span>
+                                    </label>
+                                ))}
+
+                            </div>
+                            {errors.categories && <p className="text-red-600 text-sm mt-2">{errors.categories}</p>}
+
+                        </div>
+
                     </div>
                 </div>
             </div>
